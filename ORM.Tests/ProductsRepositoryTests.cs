@@ -25,7 +25,6 @@ namespace ADO.Tests
 
                 // act
                 _repository.CreateProduct(product);
-                _repository.Save();
 
                 // assert
                 var retrievedProduct = _repository.GetProduct(product.Id);
@@ -42,7 +41,6 @@ namespace ADO.Tests
                 var product = ProductStub();
 
                 _repository.CreateProduct(product);
-                _repository.Save();
 
                 // act
                 var retrievedProduct = _repository.GetProduct(product.Id);
@@ -63,13 +61,12 @@ namespace ADO.Tests
                 // act
                 product.Name = "x";
                 product.Description = "x";
-                product.Height = 1m;
-                product.Weight = 2m;
-                product.Length = 3m;
-                product.Width = 4m;
+                product.Height = 1.000m;
+                product.Weight = 2.000m;
+                product.Length = 3.000m;
+                product.Width = 4.000m;
 
                 _repository.UpdateProduct(product);
-                _repository.Save();
 
                 // assert
                 var retrievedProduct = _repository.GetProduct(product.Id);
@@ -86,11 +83,9 @@ namespace ADO.Tests
                 var product = ProductStub();
 
                 _repository.CreateProduct(product);
-                _repository.Save();
 
                 // act
                 _repository.DeleteProduct(product.Id);
-                _repository.Save();
 
                 // assert
                 var products = _repository.ListProducts();
@@ -110,8 +105,6 @@ namespace ADO.Tests
                 _repository.CreateProduct(product1);
                 _repository.CreateProduct(product2);
 
-                _repository.Save();
-
                 // act
                 var products = _repository.ListProducts();
 
@@ -127,9 +120,9 @@ namespace ADO.Tests
                 Name = "iPhone 15",
                 Description = "Latest Apple smartphone",
                 Weight = 0.174m,
-                Height = 14.7m,
-                Length = 7.1m,
-                Width = 0.75m
+                Height = 14.700m,
+                Length = 7.100m,
+                Width = 0.750m
             };
         }
     }

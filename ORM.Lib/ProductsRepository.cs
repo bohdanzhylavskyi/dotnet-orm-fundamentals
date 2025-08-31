@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
 using System.Data;
 
 namespace ADO.Lib
@@ -6,12 +7,12 @@ namespace ADO.Lib
     public class Product
     {
         public int Id { get; set; }
-        public required string Name;
-        public required string Description;
-        public required decimal Weight;
-        public required decimal Height;
-        public required decimal Width;
-        public required decimal Length;
+        public required string Name { get; set; }
+        public required string Description { get; set; }
+        public required decimal Weight { get; set; }
+        public required decimal Height { get; set; }
+        public required decimal Width { get; set; }
+        public required decimal Length { get; set; }
     }
 
     public class ProductsRepository
@@ -45,108 +46,62 @@ namespace ADO.Lib
 
         public void CreateProduct(Product product)
         {
-            this.Init();
+            using (SqlConnection connection = new(_connectionString))
+            {
+                var id = connection.QuerySingle<int>(
+                    "INSERT INTO Products (Name, Description, Weight, Height, Width, Length) " +
+                    "OUTPUT INSERTED.Id " +
+                    "VALUES (@Name, @Description, @Weight, @Height, @Width, @Length);",
+                    product
+                );
 
-            var row = this._productsTable.NewRow();
-
-            row["Name"] = product.Name;
-            row["Description"] = product.Description;
-            row["Weight"] = product.Weight;
-            row["Height"] = product.Height;
-            row["Width"] = product.Width;
-            row["Length"] = product.Length;
-
-            this._productsTable.Rows.Add(row);
-
-            this.Save();
-
-            product.Id = (int)row["Id"];
+                product.Id = id;
+            }
         }
-        
+
         public Product? GetProduct(int productId)
         {
-            this.Init();
-
-            var row = this._productsTable.AsEnumerable().First(r => r.Field<int>("Id") == productId);
-
-            return row != null
-                ? new Product()
-                {
-                    Id = row.Field<int>("Id"),
-                    Name = row.Field<string>("Name"),
-                    Description = row.Field<string>("Description"),
-                    Height = row.Field<decimal>("Height"),
-                    Weight = row.Field<decimal>("Weight"),
-                    Width = row.Field<decimal>("Width"),
-                    Length = row.Field<decimal>("Length"),
-                }
-                : null;
+            using (SqlConnection connection = new(_connectionString))
+            {
+                return connection.QueryFirstOrDefault<Product>(
+                    "SELECT * FROM Products WHERE Id = @Id;",
+                    new
+                    {
+                        Id = productId,
+                    }
+                );
+            }
         }
 
         public void UpdateProduct(Product product)
         {
-            this.Init();
-
-            var row = this._productsTable.AsEnumerable().First(r => r.Field<int>("Id") == product.Id);
-
-            if (row != null)
+            using (SqlConnection connection = new(_connectionString))
             {
-                row["Name"] = product.Name;
-                row["Description"] = product.Description;
-                row["Weight"] = product.Weight;
-                row["Height"] = product.Height;
-                row["Width"] = product.Width;
-                row["Length"] = product.Length;
+                connection.Execute(
+                     "UPDATE Products SET Name=@Name, Description=@Description, Weight=@Weight, Height=@Height, Width=@Width, Length=@Length" +
+                     " WHERE Id=@Id",
+                    product
+                );
             }
         }
 
         public void DeleteProduct(int productId)
         {
-            this.Init();
-
-            var row = this._productsTable.AsEnumerable().First(r => r.Field<int>("Id") == productId);
-
-            if (row != null)
+            using (SqlConnection connection = new(_connectionString))
             {
-                row.Delete();
+                connection.Execute(
+                     "DELETE FROM Products WHERE Id = @Id;",
+                    new { Id = productId }
+                );
             }
         }
 
         public List<Product> ListProducts()
         {
-            this.Init();
-
-            var products = this._productsTable.AsEnumerable().Select(r => new Product
+            using (SqlConnection connection = new(_connectionString))
             {
-                Id = r.Field<int>("Id"),
-                Name = r.Field<string>("Name"),
-                Description = r.Field<string>("Description"),
-                Height = r.Field<decimal>("Height"),
-                Weight = r.Field<decimal>("Weight"),
-                Width = r.Field<decimal>("Width"),
-                Length = r.Field<decimal>("Length"),
-            }).ToList();
-
-            return products;
-        }
-
-        public void Save()
-        {
-            this._adapter.Update(this._productsTable);
-            this._productsTable.AcceptChanges();
-        }
-
-        private void Init()
-        {
-            if (this._isInitialized)
-            {
-                return;
+                return connection.Query<Product>("SELECT * FROM Products;").ToList();
             }
-
-            var builder = new SqlCommandBuilder(this._adapter);
-            this._adapter.Fill(this._productsTable);
-
-            this._isInitialized = true;
         }
     }
 }

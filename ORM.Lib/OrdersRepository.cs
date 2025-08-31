@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
 using System.Data;
 
 namespace ADO.Lib
@@ -17,10 +18,10 @@ namespace ADO.Lib
     public class Order
     {
         public int Id { get; set; }
-        public required OrderStatus Status;
-        public required DateTime CreatedDate;
-        public required DateTime UpdatedDate;
-        public required int ProductId;
+        public required OrderStatus Status { get; set; }
+        public required DateTime CreatedDate { get; set; }
+        public required DateTime UpdatedDate { get; set; }
+        public required int ProductId { get; set; }
     }
 
     public struct OrderFilters
@@ -29,7 +30,7 @@ namespace ADO.Lib
         public int? Year { get; init; } = null;
         public OrderStatus? Status { get; init; } = null;
         public int? ProductId { get; init; } = null;
-        public OrderFilters() {}
+        public OrderFilters() { }
     }
 
     public class OrdersRepository
@@ -43,21 +44,14 @@ namespace ADO.Lib
 
         public void CreateOrder(Order order)
         {
-            using (SqlConnection connection = new(this._connectionString))
+            using (SqlConnection connection = new(_connectionString))
             {
-                SqlCommand command = new(
+                var id = connection.QuerySingle<int>(
                     "INSERT INTO Orders (Status, CreatedDate, UpdatedDate, ProductId) " +
                     "OUTPUT INSERTED.Id " +
-                    "VALUES (@Status, @CreatedDate, @UpdatedDate, @ProductId);", connection);
-
-                command.Parameters.AddWithValue("Status", order.Status.ToString());
-                command.Parameters.AddWithValue("CreatedDate", order.CreatedDate);
-                command.Parameters.AddWithValue("UpdatedDate", order.UpdatedDate);
-                command.Parameters.AddWithValue("ProductId", order.ProductId);
-
-                connection.Open();
-
-                var id = (int)command.ExecuteScalar();
+                    "VALUES (@Status, @CreatedDate, @UpdatedDate, @ProductId);",
+                    this.ConvertOrderToDapperParams(order)
+                );
 
                 order.Id = id;
             }
@@ -68,66 +62,36 @@ namespace ADO.Lib
         {
             using (SqlConnection connection = new(_connectionString))
             {
-                SqlCommand command = new("SELECT * FROM Orders WHERE Id = @Id;", connection);
-
-                command.Parameters.AddWithValue("Id", productId);
-
-                connection.Open();
-
-                SqlDataReader reader = command.ExecuteReader();
-                Order? result = null;
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                return connection.QueryFirstOrDefault<Order>(
+                    "SELECT * FROM Orders WHERE Id = @Id;",
+                    new
                     {
-                        result = new Order()
-                        {
-                            Id = reader.GetInt32("Id"),
-                            Status = Enum.Parse<OrderStatus>(reader.GetString("Status")),
-                            CreatedDate = reader.GetDateTime("CreatedDate"),
-                            UpdatedDate = reader.GetDateTime("UpdatedDate"),
-                            ProductId = reader.GetInt32("ProductId"),
-                        };
+                        Id = productId,
                     }
-                }
-
-                reader.Close();
-
-                return result;
+                );
             }
         }
 
         public void UpdateOrder(Order order)
         {
-            using (SqlConnection connection = new(this._connectionString))
+            using (SqlConnection connection = new(_connectionString))
             {
-                SqlCommand command = new(
-                "UPDATE Orders SET Status=@Status, CreatedDate=@CreatedDate, UpdatedDate=@UpdatedDate, ProductId=@ProductId" +
-                " WHERE Id=@Id", connection);
-
-                command.Parameters.AddWithValue("Status", order.Status.ToString());
-                command.Parameters.AddWithValue("CreatedDate", order.CreatedDate);
-                command.Parameters.AddWithValue("UpdatedDate", order.UpdatedDate);
-                command.Parameters.AddWithValue("ProductId", order.ProductId);
-                command.Parameters.AddWithValue("Id", order.Id);
-
-                connection.Open();
-                command.ExecuteNonQuery();
+                connection.Execute(
+                     "UPDATE Orders SET Status=@Status, CreatedDate=@CreatedDate, UpdatedDate=@UpdatedDate, ProductId=@ProductId" +
+                     " WHERE Id=@Id",
+                    this.ConvertOrderToDapperParams(order)
+                );
             }
         }
 
         public void DeleteOrder(int orderId)
         {
-            using (SqlConnection connection = new(this._connectionString))
+            using (SqlConnection connection = new(_connectionString))
             {
-                SqlCommand command = new(
-                    "DELETE FROM Orders WHERE Id = @Id;", connection);
-
-                command.Parameters.AddWithValue("Id", orderId);
-
-                connection.Open();
-                command.ExecuteNonQuery();
+                connection.Execute(
+                     "DELETE FROM Orders WHERE Id = @Id;",
+                    new { Id = orderId }
+                );
             }
         }
 
@@ -175,31 +139,7 @@ namespace ADO.Lib
         {
             using (SqlConnection connection = new(_connectionString))
             {
-                SqlCommand command = new("SELECT * FROM Orders;", connection);
-
-                connection.Open();
-
-                SqlDataReader reader = command.ExecuteReader();
-                var result = new List<Order>();
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        result.Add(new Order()
-                        {
-                            Id = reader.GetInt32("Id"),
-                            Status = Enum.Parse<OrderStatus>(reader.GetString("Status")),
-                            CreatedDate = reader.GetDateTime("CreatedDate"),
-                            UpdatedDate = reader.GetDateTime("UpdatedDate"),
-                            ProductId = reader.GetInt32("ProductId"),
-                        });
-                    }
-                }
-
-                reader.Close();
-
-                return result;
+                return connection.Query<Order>("SELECT * FROM Orders;").ToList();
             }
         }
 
@@ -247,65 +187,48 @@ namespace ADO.Lib
         {
             using (SqlConnection connection = new(_connectionString))
             {
-                connection.Open();
+                var parameters = new DynamicParameters();
 
-                SqlCommand command = new SqlCommand()
-                {
-                    CommandText = "SearchOrders",
-                    CommandType = CommandType.StoredProcedure,
-                    Connection = connection
-                };
+                if (filters.Month is not null) parameters.Add("@Month", filters.Month);
+                if (filters.Year is not null) parameters.Add("@Year", filters.Year);
+                if (filters.Status is not null) parameters.Add("@Status", filters.Status.ToString());
+                if (filters.ProductId is not null) parameters.Add("@ProductId", filters.ProductId);
 
-                if (filters.Month is not null) command.Parameters.AddWithValue("Month", filters.Month);
-                if (filters.Year is not null) command.Parameters.AddWithValue("Year", filters.Year);
-                if (filters.Status is not null) command.Parameters.AddWithValue("Status", filters.Status.ToString());
-                if (filters.ProductId is not null) command.Parameters.AddWithValue("ProductId", filters.ProductId);
-
-
-                SqlDataReader reader = command.ExecuteReader();
-                var result = new List<Order>();
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        result.Add(new Order()
-                        {
-                            Id = reader.GetInt32("Id"),
-                            Status = Enum.Parse<OrderStatus>(reader.GetString("Status")),
-                            CreatedDate = reader.GetDateTime("CreatedDate"),
-                            UpdatedDate = reader.GetDateTime("UpdatedDate"),
-                            ProductId = reader.GetInt32("ProductId"),
-                        });
-                    }
-                }
-
-                reader.Close();
-
-                return result;
+                return connection.Query<Order>(
+                    "SearchOrders",
+                    parameters, commandType: CommandType.StoredProcedure
+                ).ToList();
             }
         }
 
         private void DeleteOrders(OrderFilters filters)
         {
-            using (SqlConnection connection = new(this._connectionString))
+            using (SqlConnection connection = new(_connectionString))
             {
-                connection.Open();
+                var parameters = new DynamicParameters();
 
-                SqlCommand command = new SqlCommand()
-                {
-                    CommandText = "DeleteOrders",
-                    CommandType = CommandType.StoredProcedure,
-                    Connection = connection
-                };
+                if (filters.Month is not null) parameters.Add("@Month", filters.Month);
+                if (filters.Year is not null) parameters.Add("@Year", filters.Year);
+                if (filters.Status is not null) parameters.Add("@Status", filters.Status.ToString());
+                if (filters.ProductId is not null) parameters.Add("@ProductId", filters.ProductId);
 
-                if (filters.Month is not null) command.Parameters.AddWithValue("Month", filters.Month);
-                if (filters.Year is not null) command.Parameters.AddWithValue("Year", filters.Year);
-                if (filters.Status is not null) command.Parameters.AddWithValue("Status", filters.Status.ToString());
-                if (filters.ProductId is not null) command.Parameters.AddWithValue("ProductId", filters.ProductId);
-
-                command.ExecuteNonQuery();
+                connection.Execute(
+                    "DeleteOrders",
+                    parameters, commandType: CommandType.StoredProcedure
+                );
             }
+        }
+
+        private object ConvertOrderToDapperParams(Order order)
+        {
+            return new
+            {
+                Id = order.Id,
+                CreatedDate = order.CreatedDate,
+                UpdatedDate = order.UpdatedDate,
+                ProductId = order.ProductId,
+                Status = order.Status.ToString(),
+            };
         }
     }
 }
