@@ -1,30 +1,31 @@
-using ADO.Lib;
+using Core;
 using System.Transactions;
 
-namespace ADO.Tests
+namespace Tests.OrdersRepositoryTests
 {
     [Collection("Database collection")]
-    public class OrdersRepositoryTests
+    public abstract class OrdersRepositoryTests
     {
-        private readonly DatabaseFixture _fixture;
-        private readonly OrdersRepository _repository;
+        protected readonly DatabaseFixture _fixture;
+        private readonly IOrdersRepository _repository;
 
         public OrdersRepositoryTests(DatabaseFixture fixture)
         {
             _fixture = fixture;
-            _repository = new OrdersRepository(this._fixture.ConnectionString);
+            _repository = this.CreateRepositoryInstance();
         }
+        public abstract IOrdersRepository CreateRepositoryInstance();
 
         [Fact]
         public void CreateOrder()
         {
             using (var scope = new TransactionScope())
             {
-                this._fixture.SeedProducts();
+                _fixture.SeedProducts();
 
                 var order = new Order()
                 {
-                    ProductId = _fixture.product1.Id,
+                    ProductId = _fixture.Product1.Id,
                     CreatedDate = DateTime.Now,
                     UpdatedDate = DateTime.Now,
                     Status = OrderStatus.NotStarted,
@@ -45,11 +46,11 @@ namespace ADO.Tests
         {
             using (var scope = new TransactionScope())
             {
-                this._fixture.SeedProducts();
+                _fixture.SeedProducts();
 
                 var order = new Order()
                 {
-                    ProductId = _fixture.product1.Id,
+                    ProductId = _fixture.Product1.Id,
                     CreatedDate = DateTime.Now,
                     UpdatedDate = DateTime.Now,
                     Status = OrderStatus.NotStarted,
@@ -69,11 +70,11 @@ namespace ADO.Tests
         {
             using (var scope = new TransactionScope())
             {
-                this._fixture.SeedProducts();
+                _fixture.SeedProducts();
 
                 var order = new Order()
                 {
-                    ProductId = _fixture.product1.Id,
+                    ProductId = _fixture.Product1.Id,
                     CreatedDate = DateTime.Parse("2022-01-21 00:00:00"),
                     UpdatedDate = DateTime.Parse("2022-05-10 00:00:00"),
                     Status = OrderStatus.NotStarted,
@@ -100,11 +101,11 @@ namespace ADO.Tests
         {
             using (var scope = new TransactionScope())
             {
-                this._fixture.SeedProducts();
+                _fixture.SeedProducts();
 
                 var order = new Order()
                 {
-                    ProductId = _fixture.product1.Id,
+                    ProductId = _fixture.Product1.Id,
                     CreatedDate = DateTime.Now,
                     UpdatedDate = DateTime.Now,
                     Status = OrderStatus.NotStarted,
@@ -126,11 +127,11 @@ namespace ADO.Tests
         {
             using (var scope = new TransactionScope())
             {
-                this._fixture.SeedProducts();
+                _fixture.SeedProducts();
 
                 var order1 = new Order()
                 {
-                    ProductId = _fixture.product1.Id,
+                    ProductId = _fixture.Product1.Id,
                     CreatedDate = DateTime.Now,
                     UpdatedDate = DateTime.Now,
                     Status = OrderStatus.NotStarted,
@@ -140,7 +141,7 @@ namespace ADO.Tests
 
                 var order2 = new Order()
                 {
-                    ProductId = _fixture.product2.Id,
+                    ProductId = _fixture.Product2.Id,
                     CreatedDate = DateTime.Now,
                     UpdatedDate = DateTime.Now,
                     Status = OrderStatus.Arrived,
@@ -161,11 +162,11 @@ namespace ADO.Tests
         {
             using (var scope = new TransactionScope())
             {
-                this._fixture.SeedProducts();
+                _fixture.SeedProducts();
 
                 var order1 = new Order()
                 {
-                    ProductId = _fixture.product1.Id,
+                    ProductId = _fixture.Product1.Id,
                     CreatedDate = DateTime.Parse("01/26/2025 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("01/26/2025 2:30:00 PM"),
                     Status = OrderStatus.NotStarted,
@@ -175,7 +176,7 @@ namespace ADO.Tests
 
                 var order2 = new Order()
                 {
-                    ProductId = _fixture.product2.Id,
+                    ProductId = _fixture.Product2.Id,
                     CreatedDate = DateTime.Parse("08/26/2025 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("08/26/2025 2:30:00 PM"),
                     Status = OrderStatus.Arrived,
@@ -196,11 +197,11 @@ namespace ADO.Tests
         {
             using (var scope = new TransactionScope())
             {
-                this._fixture.SeedProducts();
+                _fixture.SeedProducts();
 
                 var order1 = new Order()
                 {
-                    ProductId = _fixture.product1.Id,
+                    ProductId = _fixture.Product1.Id,
                     CreatedDate = DateTime.Parse("01/26/2022 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("01/26/2022 2:30:00 PM"),
                     Status = OrderStatus.NotStarted,
@@ -210,7 +211,7 @@ namespace ADO.Tests
 
                 var order2 = new Order()
                 {
-                    ProductId = _fixture.product2.Id,
+                    ProductId = _fixture.Product2.Id,
                     CreatedDate = DateTime.Parse("08/26/2025 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("08/26/2025 2:30:00 PM"),
                     Status = OrderStatus.Arrived,
@@ -231,11 +232,11 @@ namespace ADO.Tests
         {
             using (var scope = new TransactionScope())
             {
-                this._fixture.SeedProducts();
+                _fixture.SeedProducts();
 
                 var order1 = new Order()
                 {
-                    ProductId = _fixture.product1.Id,
+                    ProductId = _fixture.Product1.Id,
                     CreatedDate = DateTime.Parse("01/26/2022 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("01/26/2022 2:30:00 PM"),
                     Status = OrderStatus.NotStarted,
@@ -245,7 +246,7 @@ namespace ADO.Tests
 
                 var order2 = new Order()
                 {
-                    ProductId = _fixture.product2.Id,
+                    ProductId = _fixture.Product2.Id,
                     CreatedDate = DateTime.Parse("08/26/2025 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("08/26/2025 2:30:00 PM"),
                     Status = OrderStatus.Arrived,
@@ -266,11 +267,11 @@ namespace ADO.Tests
         {
             using (var scope = new TransactionScope())
             {
-                this._fixture.SeedProducts();
+                _fixture.SeedProducts();
 
                 var order1 = new Order()
                 {
-                    ProductId = _fixture.product1.Id,
+                    ProductId = _fixture.Product1.Id,
                     CreatedDate = DateTime.Parse("01/26/2022 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("01/26/2022 2:30:00 PM"),
                     Status = OrderStatus.NotStarted,
@@ -280,7 +281,7 @@ namespace ADO.Tests
 
                 var order2 = new Order()
                 {
-                    ProductId = _fixture.product2.Id,
+                    ProductId = _fixture.Product2.Id,
                     CreatedDate = DateTime.Parse("08/26/2025 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("08/26/2025 2:30:00 PM"),
                     Status = OrderStatus.Arrived,
@@ -289,7 +290,7 @@ namespace ADO.Tests
                 _repository.CreateOrder(order2);
 
                 // act
-                var orders = _repository.SearchOrdersByProduct(_fixture.product2.Id);
+                var orders = _repository.SearchOrdersByProduct(_fixture.Product2.Id);
 
                 Assert.Equal(1, orders.Count);
                 Assert.Contains(orders, (o) => o.Id == order2.Id);
@@ -301,11 +302,11 @@ namespace ADO.Tests
         {
             using (var scope = new TransactionScope())
             {
-                this._fixture.SeedProducts();
+                _fixture.SeedProducts();
 
                 var order1 = new Order()
                 {
-                    ProductId = _fixture.product1.Id,
+                    ProductId = _fixture.Product1.Id,
                     CreatedDate = DateTime.Parse("01/26/2025 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("01/26/2025 2:30:00 PM"),
                     Status = OrderStatus.NotStarted,
@@ -315,7 +316,7 @@ namespace ADO.Tests
 
                 var order2 = new Order()
                 {
-                    ProductId = _fixture.product2.Id,
+                    ProductId = _fixture.Product2.Id,
                     CreatedDate = DateTime.Parse("08/26/2025 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("08/26/2025 2:30:00 PM"),
                     Status = OrderStatus.Arrived,
@@ -339,11 +340,11 @@ namespace ADO.Tests
         {
             using (var scope = new TransactionScope())
             {
-                this._fixture.SeedProducts();
+                _fixture.SeedProducts();
 
                 var order1 = new Order()
                 {
-                    ProductId = _fixture.product1.Id,
+                    ProductId = _fixture.Product1.Id,
                     CreatedDate = DateTime.Parse("01/26/2020 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("01/26/2020 2:30:00 PM"),
                     Status = OrderStatus.NotStarted,
@@ -353,7 +354,7 @@ namespace ADO.Tests
 
                 var order2 = new Order()
                 {
-                    ProductId = _fixture.product2.Id,
+                    ProductId = _fixture.Product2.Id,
                     CreatedDate = DateTime.Parse("08/26/2026 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("08/26/2026 2:30:00 PM"),
                     Status = OrderStatus.Arrived,
@@ -377,11 +378,11 @@ namespace ADO.Tests
         {
             using (var scope = new TransactionScope())
             {
-                this._fixture.SeedProducts();
+                _fixture.SeedProducts();
 
                 var order1 = new Order()
                 {
-                    ProductId = _fixture.product1.Id,
+                    ProductId = _fixture.Product1.Id,
                     CreatedDate = DateTime.Parse("01/26/2020 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("01/26/2020 2:30:00 PM"),
                     Status = OrderStatus.NotStarted,
@@ -391,7 +392,7 @@ namespace ADO.Tests
 
                 var order2 = new Order()
                 {
-                    ProductId = _fixture.product2.Id,
+                    ProductId = _fixture.Product2.Id,
                     CreatedDate = DateTime.Parse("08/26/2026 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("08/26/2026 2:30:00 PM"),
                     Status = OrderStatus.Arrived,
@@ -415,11 +416,11 @@ namespace ADO.Tests
         {
             using (var scope = new TransactionScope())
             {
-                this._fixture.SeedProducts();
+                _fixture.SeedProducts();
 
                 var order1 = new Order()
                 {
-                    ProductId = _fixture.product1.Id,
+                    ProductId = _fixture.Product1.Id,
                     CreatedDate = DateTime.Parse("01/26/2020 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("01/26/2020 2:30:00 PM"),
                     Status = OrderStatus.NotStarted,
@@ -429,7 +430,7 @@ namespace ADO.Tests
 
                 var order2 = new Order()
                 {
-                    ProductId = _fixture.product2.Id,
+                    ProductId = _fixture.Product2.Id,
                     CreatedDate = DateTime.Parse("08/26/2026 2:30:00 PM"),
                     UpdatedDate = DateTime.Parse("08/26/2026 2:30:00 PM"),
                     Status = OrderStatus.Arrived,
@@ -438,7 +439,7 @@ namespace ADO.Tests
                 _repository.CreateOrder(order2);
 
                 // act
-                _repository.DeleteOrdersByProduct(_fixture.product1.Id);
+                _repository.DeleteOrdersByProduct(_fixture.Product1.Id);
 
                 // assert
                 var orders = _repository.ListOrders();

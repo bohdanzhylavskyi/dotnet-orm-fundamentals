@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ORM.DB", "ORM.DB\ORM.DB.sqlproj", "{C317E315-15F9-4C2D-A2D3-5D7C0884CCAE}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DB", "DB\DB.sqlproj", "{C317E315-15F9-4C2D-A2D3-5D7C0884CCAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ORM.Tests", "ORM.Tests\ORM.Tests.csproj", "{9BA932F6-33EC-44D0-B942-68818A07AFD6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{9BA932F6-33EC-44D0-B942-68818A07AFD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ORM.Lib", "ORM.Lib\ORM.Lib.csproj", "{189B063C-1252-4722-9C6F-CFCBDEA70810}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.Lib", "Dapper.Lib\Dapper.Lib.csproj", "{189B063C-1252-4722-9C6F-CFCBDEA70810}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EF.Lib", "EF.Lib\EF.Lib.csproj", "{381A344C-2EF6-4D34-B334-8830E6BEC443}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{3E9F5FD0-CD57-4FBA-A907-41254C09100D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +33,14 @@ Global
 		{189B063C-1252-4722-9C6F-CFCBDEA70810}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{189B063C-1252-4722-9C6F-CFCBDEA70810}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{189B063C-1252-4722-9C6F-CFCBDEA70810}.Release|Any CPU.Build.0 = Release|Any CPU
+		{381A344C-2EF6-4D34-B334-8830E6BEC443}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{381A344C-2EF6-4D34-B334-8830E6BEC443}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{381A344C-2EF6-4D34-B334-8830E6BEC443}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{381A344C-2EF6-4D34-B334-8830E6BEC443}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E9F5FD0-CD57-4FBA-A907-41254C09100D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E9F5FD0-CD57-4FBA-A907-41254C09100D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E9F5FD0-CD57-4FBA-A907-41254C09100D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E9F5FD0-CD57-4FBA-A907-41254C09100D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

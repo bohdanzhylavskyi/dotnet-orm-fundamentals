@@ -1,5 +1,7 @@
-﻿using ADO.Lib;
+﻿using Core;
+using EFLib;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.SqlServer.Dac;
 
@@ -10,9 +12,11 @@ public class DatabaseFixture : IDisposable
     private string ServerConnectionString;
     private string TestDbName;
 
-    public Product product1;
-    public Product product2;
-    public Product product3;
+    public Product Product1;
+    public Product Product2;
+    public Product Product3;
+
+    public AppDbContext AppDbContext;
 
     public DatabaseFixture()
     {
@@ -30,7 +34,7 @@ public class DatabaseFixture : IDisposable
 
         DeployDatabase();
 
-        this.product1 = new Product()
+        this.Product1 = new Product()
         {
             Id = 0,
             Name = "Laptop Dell XPS 13",
@@ -41,7 +45,7 @@ public class DatabaseFixture : IDisposable
             Width = 20.0m
         };
 
-        this.product2 = new Product()
+        this.Product2 = new Product()
         {
             Id = 1,
             Name = "Wooden Chair",
@@ -52,7 +56,7 @@ public class DatabaseFixture : IDisposable
             Width = 50.0m
         };
 
-        this.product3 = new Product()
+        this.Product3 = new Product()
         {
             Id = 2,
             Name = "Samsung 55'' QLED TV",
@@ -63,13 +67,18 @@ public class DatabaseFixture : IDisposable
             Width = 5.5m
         };
 
+        var optionsBuilder = new DbContextOptionsBuilder<EFLib.AppDbContext>();
+        optionsBuilder.UseSqlServer(ConnectionString);
+
+        this.AppDbContext = new EFLib.AppDbContext(optionsBuilder.Options);
+
     }
 
     public void SeedProducts()
     {
-        this.AddProduct(this.product1);
-        this.AddProduct(this.product2);
-        this.AddProduct(this.product3);
+        this.AddProduct(this.Product1);
+        this.AddProduct(this.Product2);
+        this.AddProduct(this.Product3);
     }
 
     private void AddProduct(Product product)
@@ -99,7 +108,7 @@ public class DatabaseFixture : IDisposable
 
     private void DeployDatabase()
     {
-        string dacpacPath = @"..\..\..\..\ORM.DB\bin\Debug\ORM.DB.dacpac";
+        string dacpacPath = @"..\..\..\..\DB\bin\Debug\DB.dacpac";
 
         using var dacpac = DacPackage.Load(dacpacPath);
         var dacServices = new DacServices(ServerConnectionString);

@@ -1,21 +1,10 @@
-﻿using Dapper;
+﻿using Core;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace ADO.Lib
+namespace Dapper.Lib
 {
-    public class Product
-    {
-        public int Id { get; set; }
-        public required string Name { get; set; }
-        public required string Description { get; set; }
-        public required decimal Weight { get; set; }
-        public required decimal Height { get; set; }
-        public required decimal Width { get; set; }
-        public required decimal Length { get; set; }
-    }
-
-    public class ProductsRepository
+    public class ProductsRepository : IProductsRepository
     {
         private string _connectionString;
         private readonly SqlDataAdapter _adapter;

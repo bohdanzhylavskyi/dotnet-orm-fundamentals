@@ -1,39 +1,10 @@
-﻿using Dapper;
+﻿using Core;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace ADO.Lib
+namespace Dapper.Lib
 {
-    public enum OrderStatus
-    {
-        NotStarted,
-        Loading,
-        InProgress,
-        Arrived,
-        Unloading,
-        Cancelled,
-        Done
-    }
-
-    public class Order
-    {
-        public int Id { get; set; }
-        public required OrderStatus Status { get; set; }
-        public required DateTime CreatedDate { get; set; }
-        public required DateTime UpdatedDate { get; set; }
-        public required int ProductId { get; set; }
-    }
-
-    public struct OrderFilters
-    {
-        public int? Month { get; init; } = null;
-        public int? Year { get; init; } = null;
-        public OrderStatus? Status { get; init; } = null;
-        public int? ProductId { get; init; } = null;
-        public OrderFilters() { }
-    }
-
-    public class OrdersRepository
+    public class OrdersRepository : IOrdersRepository
     {
         private string _connectionString;
 

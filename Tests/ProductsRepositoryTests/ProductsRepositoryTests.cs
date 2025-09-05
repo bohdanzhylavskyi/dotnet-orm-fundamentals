@@ -1,20 +1,21 @@
-using ADO.Lib;
+using Core;
 using System.Transactions;
 
-namespace ADO.Tests
+namespace Tests.ProductsRepositoryTests
 {
     [Collection("Database collection")]
-    public class ProductsRepositoryTests
+    abstract public class ProductsRepositoryTests
     {
-        private readonly DatabaseFixture _fixture;
-        private readonly ProductsRepository _repository;
+        protected readonly DatabaseFixture _fixture;
+        private readonly IProductsRepository _repository;
 
         public ProductsRepositoryTests(DatabaseFixture fixture)
         {
             _fixture = fixture;
-            _repository = new ProductsRepository(this._fixture.ConnectionString);
+            _repository = CreateRepositoryInstance();
         }
 
+        public abstract IProductsRepository CreateRepositoryInstance();
 
         [Fact]
         public void CreateProduct()

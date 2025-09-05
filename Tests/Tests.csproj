@@ -21,7 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ORM.Lib\ORM.Lib.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Dapper.Lib\Dapper.Lib.csproj" />
+    <ProjectReference Include="..\EF.Lib\EF.Lib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
