@@ -1,12 +1,11 @@
 using Core;
-using EFLib;
+using EF.Lib;
 
 namespace Tests.ProductsRepositoryTests
 {
-    [Collection("Database collection")]
-    public class EfProductsRepositoryTests : ProductsRepositoryTests
+    public class EFProductsRepositoryTests : ProductsRepositoryTests
     {
-        public EfProductsRepositoryTests(DatabaseFixture fixture) : base(fixture)
+        public EFProductsRepositoryTests(DatabaseFixture fixture) : base(fixture)
         {
         }
 

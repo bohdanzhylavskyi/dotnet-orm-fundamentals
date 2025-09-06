@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace EFLib
+namespace EF.Lib
 {
     public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {

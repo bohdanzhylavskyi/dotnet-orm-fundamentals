@@ -1,5 +1,5 @@
 ﻿using Core;
-using EFLib;
+using EF.Lib;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -67,10 +67,10 @@ public class DatabaseFixture : IDisposable
             Width = 5.5m
         };
 
-        var optionsBuilder = new DbContextOptionsBuilder<EFLib.AppDbContext>();
+        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
         optionsBuilder.UseSqlServer(ConnectionString);
 
-        this.AppDbContext = new EFLib.AppDbContext(optionsBuilder.Options);
+        this.AppDbContext = new AppDbContext(optionsBuilder.Options);
 
     }
 

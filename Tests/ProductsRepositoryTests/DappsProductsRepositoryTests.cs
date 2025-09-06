@@ -3,7 +3,6 @@ using Core;
 
 namespace Tests.ProductsRepositoryTests
 {
-    [Collection("Database collection")]
     public class DappsProductsRepositoryTests : ProductsRepositoryTests
     {
         public DappsProductsRepositoryTests(DatabaseFixture fixture) : base(fixture)

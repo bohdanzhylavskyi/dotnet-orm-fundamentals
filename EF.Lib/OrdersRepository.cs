@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
-namespace EFLib
+namespace EF.Lib
 {
     public class OrdersRepository : IOrdersRepository
     {
@@ -135,21 +135,6 @@ namespace EFLib
                     filters.ProductId ?? (object)DBNull.Value
                 )
                 .ToList();
-
-            //using (SqlConnection connection = new(_connectionString))
-            //{
-            //    var parameters = new DynamicParameters();
-
-            //    if (filters.Month is not null) parameters.Add("@Month", filters.Month);
-            //    if (filters.Year is not null) parameters.Add("@Year", filters.Year);
-            //    if (filters.Status is not null) parameters.Add("@Status", filters.Status.ToString());
-            //    if (filters.ProductId is not null) parameters.Add("@ProductId", filters.ProductId);
-
-            //    return connection.Query<Order>(
-            //        "SearchOrders",
-            //        parameters, commandType: CommandType.StoredProcedure
-            //    ).ToList();
-            //}
         }
 
         private void DeleteOrders(OrderFilters filters)

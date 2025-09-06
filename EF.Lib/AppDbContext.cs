@@ -1,7 +1,7 @@
 ﻿using Core;
 using Microsoft.EntityFrameworkCore;
 
-namespace EFLib
+namespace EF.Lib
 {
     public class AppDbContext : DbContext
     {

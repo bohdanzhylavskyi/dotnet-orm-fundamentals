@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace EFLib
+namespace EF.Lib
 {
     internal class Program
     {

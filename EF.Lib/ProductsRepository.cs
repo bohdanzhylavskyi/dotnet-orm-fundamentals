@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
-namespace EFLib
+namespace EF.Lib
 {
     public class ProductsRepository : IProductsRepository
     {
